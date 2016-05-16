@@ -1,7 +1,10 @@
 ﻿namespace CodingMonkey.CodeExecutor.Controllers
 {
+    using System;
+
     using Microsoft.AspNet.Authorization;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using CodingMonkey.CodeExecutor.Models;
@@ -40,6 +43,8 @@
                     break;
                 }
             }
+
+            submittedCode.ResultSummary.AllTestsExecuted = submittedCode.Tests.All(x => x.Result.TestExecuted);
 
             return Json(submittedCode);
         }
@@ -130,33 +135,38 @@
             {
                 case "String":
                     {
-                        AddResultToTestResult<string>(test);
-                        break;
+                        return AddResultToTestResult<string>(test);
                     }
                 case "Integer":
                     {
-                        AddResultToTestResult<int>(test);
-                        break;
+                        return AddResultToTestResult<int>(test);
                     }
                 case "Boolean":
                     {
-                        AddResultToTestResult<bool>(test);
-                        break;
+                        return AddResultToTestResult<bool>(test);
                     }
                 default:
                     {
-                        return true;
+                        return false;
                     }
             }
-            return false;
         }
 
-        private static void AddResultToTestResult<T>(Test test)
+        private static bool AddResultToTestResult<T>(Test test)
         {
-            var value = GetValue<T>(test.ExpectedOutput.Value);
-            test.ExpectedOutput.Value = (T)value;
+            try
+            {
+                var value = GetValue<T>(test.ExpectedOutput.Value);
+                test.ExpectedOutput.Value = (T)value;
 
-            test.Result.TestPassed = value.Equals((T)test.ActualOutput);
+                test.Result.TestPassed = value.Equals((T)test.ActualOutput);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private static object GetValue<T>(object value)
