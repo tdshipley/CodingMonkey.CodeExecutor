@@ -33,18 +33,13 @@
                         test,
                         submittedCode.ResultSummary);
 
-                if (submittedCode.ResultSummary.ErrorProcessingTests)
-                {
-                    return Json(string.Empty);
-                }
-
-                if (submittedCode.ResultSummary.HasRuntimeError)
+                if (submittedCode.ResultSummary.ErrorProcessingTests || submittedCode.ResultSummary.HasRuntimeError)
                 {
                     break;
                 }
             }
 
-            submittedCode.ResultSummary.AllTestsExecuted = submittedCode.Tests.All(x => x.Result.TestExecuted);
+            submittedCode.ResultSummary.AllTestsExecuted = submittedCode.Tests.All(x => x.Result != null && x.Result.TestExecuted);
 
             return Json(submittedCode);
         }
