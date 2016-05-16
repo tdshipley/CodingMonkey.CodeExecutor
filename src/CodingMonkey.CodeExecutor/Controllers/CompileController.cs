@@ -20,7 +20,7 @@
 
             var compilerErrors = new RoslynCompiler().Compile(submittedCode.Code);
 
-            if (compilerErrors == null)
+            if (compilerErrors.Count == 0)
             {
                 submittedCode.ResultSummary.HasCompilerErrors = false;
                 submittedCode.ResultSummary.CompilerErrors = null;

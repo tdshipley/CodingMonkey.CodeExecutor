@@ -22,7 +22,9 @@
     "System.Collections": "4.0.11-beta-23516",
     "System.Text.RegularExpressions": "4.0.11-beta-23516",
     "System.Diagnostics.Process": "4.1.0-beta-23516",
-    "System.Threading.Thread": "4.0.0-beta-23516"
+    "System.Threading.Thread": "4.0.0-beta-23516",
+    "Serilog.Extensions.Logging": "1.0.0-rc1-final-10092",
+    "Serilog.Sinks.RollingFile": "2.0.0-beta-700"
   },
 
   "commands": {

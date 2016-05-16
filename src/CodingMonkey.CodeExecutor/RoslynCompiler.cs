@@ -23,6 +23,8 @@
 
         public IList<CompilerError> Compile(string code)
         {
+            List<CompilerError> errors = new List<CompilerError>();
+
             try
             {
                 code = this.Security.SanitiseCode(code);
@@ -38,7 +40,7 @@
 
             var script = CSharpScript.Create(code);
             IList<Diagnostic> errorsFromSource = script.Compile();
-            var errors = errorsFromSource.Select(error => new CompilerError(error)).ToList();
+            errors = errorsFromSource.Select(error => new CompilerError(error)).ToList();
 
             // The user doesn't see using statements added by pre security checks
             // so move the error line numbers to the right place.

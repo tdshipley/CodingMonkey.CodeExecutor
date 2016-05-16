@@ -1,21 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
+﻿
 namespace CodingMonkey.CodeExecutor
 {
     using System.IdentityModel.Tokens.Jwt;
+    using System.IO;
+
+    using Microsoft.AspNet.Builder;
+    using Microsoft.AspNet.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.PlatformAbstractions;
+
+    using Serilog;
+    using Serilog.Sinks.RollingFile;
 
     public class Startup
     {
         public Startup(IHostingEnvironment env)
         {
+            string applicationPath = PlatformServices.Default.Application.ApplicationBasePath;
+
+            // Create SeriLog
+            Log.Logger = new LoggerConfiguration()
+                                .MinimumLevel.Debug()
+                                .WriteTo.RollingFile(Path.Combine(applicationPath, "log_{Date}.txt"))
+                                .CreateLogger();
+
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -38,6 +48,7 @@ namespace CodingMonkey.CodeExecutor
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            loggerFactory.AddSerilog();
 
             app.UseIISPlatformHandler();
 
