@@ -1,12 +1,11 @@
 ﻿namespace CodingMonkey.CodeExecutor.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using CodingMonkey.CodeExecutor.Models;
-
-    using Microsoft.AspNet.Authorization;
-    using Microsoft.AspNet.Mvc;
+    
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
     [Authorize]

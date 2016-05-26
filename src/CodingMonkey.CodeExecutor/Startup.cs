@@ -4,12 +4,11 @@ namespace CodingMonkey.CodeExecutor
     using System.IdentityModel.Tokens.Jwt;
     using System.IO;
 
-    using Microsoft.AspNet.Builder;
-    using Microsoft.AspNet.Hosting;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.PlatformAbstractions;
 
     using Serilog;
     using Serilog.Sinks.RollingFile;
@@ -18,7 +17,7 @@ namespace CodingMonkey.CodeExecutor
     {
         public Startup(IHostingEnvironment env)
         {
-            string applicationPath = PlatformServices.Default.Application.ApplicationBasePath;
+            string applicationPath = env.ContentRootPath;
 
             // Create SeriLog
             Log.Logger = new LoggerConfiguration()
@@ -28,9 +27,11 @@ namespace CodingMonkey.CodeExecutor
 
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
+                .SetBasePath(applicationPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("appsettings.secrets.json")
                 .AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -50,8 +51,6 @@ namespace CodingMonkey.CodeExecutor
             loggerFactory.AddDebug();
             loggerFactory.AddSerilog();
 
-            app.UseIISPlatformHandler();
-
             app.UseStaticFiles();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -63,12 +62,11 @@ namespace CodingMonkey.CodeExecutor
 
                 options.AutomaticAuthenticate = true;
                 options.AutomaticChallenge = true;
+                // Todo: Do not require HTTP while in development. Change to true on release
+                options.RequireHttpsMetadata = false;
             });
 
             app.UseMvc();
         }
-
-        // Entry point for the application.
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }
