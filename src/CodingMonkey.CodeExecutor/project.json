@@ -8,31 +8,13 @@
     }
   },
   "tools": {
-    "Microsoft.AspNetCore.Razor.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
-    "Microsoft.EntityFrameworkCore.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": [
-        "portable-net45+win8+dnxcore50",
-        "portable-net45+win8"
-      ]
-    },
-    "Microsoft.Extensions.SecretManager.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
+    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
+    "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final",
+    "Microsoft.Extensions.SecretManager.Tools": "1.0.0-preview2-final",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": [
-        "portable-net45+win8+dnxcore50",
-        "portable-net45+win8"
-      ]
+      "version": "1.0.0-preview2-final",
+      "imports": "portable-net45+win8"
     }
   },
   "frameworks": {
@@ -46,36 +28,32 @@
   },
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-rc2-3002702",
+      "version": "1.0.0",
       "type": "platform"
     },
     "Microsoft.NETCore.Platforms": "1.0.1-*",
     "IdentityServer4.AccessTokenValidation": "1.0.0-beta5",
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-preview1-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-final",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.CodeAnalysis.CSharp.Scripting": "2.0.0-beta1",
-    "System.Dynamic.Runtime": "4.0.11-rc2-24027",
-    "Microsoft.CSharp": "4.0.1-rc2-24027",
-    "Newtonsoft.Json": "8.0.3",
-    "System.Collections": "4.0.11-rc2-24027",
-    "System.Text.RegularExpressions": "4.0.12-rc2-24027",
-    "System.Diagnostics.Process": "4.1.0-rc2-24027",
-    "System.Threading.Thread": "4.0.0-rc2-24027",
-    "Serilog.Extensions.Logging": "1.0.0-rc2-10104",
-    "Serilog.Sinks.RollingFile": "2.0.0-rc-703",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-final",
-    "Microsoft.AspNetCore.Mvc.Core": "1.0.0-rc2-final",
+    "System.Dynamic.Runtime": "4.0.11",
+    "Microsoft.CSharp": "4.0.1",
+    "Newtonsoft.Json": "9.0.1",
+    "System.Collections": "4.0.11",
+    "System.Text.RegularExpressions": "4.1.0",
+    "System.Diagnostics.Process": "4.1.0",
+    "System.Threading.Thread": "4.0.0",
+    "Serilog.Extensions.Logging": "1.2.0",
+    "Serilog.Sinks.RollingFile": "3.2.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0"
   },
   "publishOptions": {
     "include": [
