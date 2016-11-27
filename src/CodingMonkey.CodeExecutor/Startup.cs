@@ -12,6 +12,7 @@ namespace CodingMonkey.CodeExecutor
 
     using Serilog;
     using Serilog.Sinks.RollingFile;
+    using Newtonsoft.Json.Serialization;
 
     public class Startup
     {
@@ -41,7 +42,19 @@ namespace CodingMonkey.CodeExecutor
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            // Change JSON serialisation to use property names!
+            // See: https://weblog.west-wind.com/posts/2016/Jun/27/Upgrading-to-ASPNET-Core-RTM-from-RC2
+            services.AddMvc()
+                    .AddJsonOptions(opt =>
+                    {
+                        var resolver = opt.SerializerSettings.ContractResolver;
+
+                        if (resolver != null)
+                        {
+                            var res = resolver as DefaultContractResolver;
+                            res.NamingStrategy = null; // This removes camel casing
+                        }
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,7 +74,7 @@ namespace CodingMonkey.CodeExecutor
                 options.ScopeSecret = this.Configuration["IdentityServer:ScopeSecret"];
 
                 options.AutomaticAuthenticate = true;
-                options.AutomaticChallenge = true;
+                //options.AutomaticChallenge = true;
                 // Todo: Do not require HTTP while in development. Change to true on release
                 options.RequireHttpsMetadata = false;
             });
