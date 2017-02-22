@@ -55,6 +55,9 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0"
   },
+  "scripts": {
+    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
+  },
   "publishOptions": {
     "include": [
       "wwwroot",
