@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
 
     enum PreExecutionSecurityCodes
     {
@@ -79,8 +80,9 @@
         {
             string sanitisedCode = codeToSanitise;
             noOfReplacementsMade = 0;
+            int _noOfReplacementsMade = 0;
 
-            foreach (var bannedNamespace in SecurityLists.BannedNamespaces)
+            Parallel.ForEach(SecurityLists.BannedNamespaces, (bannedNamespace) =>
             {
                 string nsPatternIncludingExtraWhitespace = this.GetNamspaceRegexPatternIgnoreSpaces(bannedNamespace);
                 string nsPatternIncludingExtraWhitespaceAndTrailingDot = nsPatternIncludingExtraWhitespace + @"\s*[.]";
@@ -89,14 +91,16 @@
                 var nsWithTrailingDotMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespaceAndTrailingDot);
                 int totalMatches = nsMatch.Count + nsWithTrailingDotMatch.Count;
 
-                if(totalMatches > 0)
+                if (totalMatches > 0)
                 {
                     var matches = this.CombineMatchCollections(nsMatch, nsWithTrailingDotMatch);
                     sanitisedCode = this.RemoveMatchesInMatchCollectionFromCode(sanitisedCode, matches);
                 }
 
-                noOfReplacementsMade += totalMatches;
-            }
+                _noOfReplacementsMade += totalMatches;
+            });
+
+            noOfReplacementsMade = _noOfReplacementsMade;
 
             return sanitisedCode;
         }
@@ -105,8 +109,9 @@
         {
             string sanitisedCode = codeToSanitise;
             noOfReplacementsMade = 0;
+            int _noOfReplacementsMade = 0;
 
-            foreach (var bannedType in SecurityLists.BannedTypes)
+            Parallel.ForEach(SecurityLists.BannedTypes, (bannedType) =>
             {
                 // Remove the notiation that this type takes generics args
                 string bannedTypeToSearchFor = Regex.Replace(bannedType, @"`\d", "");
@@ -122,8 +127,10 @@
                     sanitisedCode = this.RemoveMatchesInMatchCollectionFromCode(sanitisedCode, matches);
                 }
 
-                noOfReplacementsMade += totalMatches;
-            }
+                _noOfReplacementsMade += totalMatches;
+            });
+
+            noOfReplacementsMade += _noOfReplacementsMade;
 
             return sanitisedCode;
         }
