@@ -1,4 +1,4 @@
-﻿namespace CodingMonkey.CodeExecutor
+﻿namespace CodingMonkey.CodeExecutor.CodeExecution
 {
     using System;
     using System.Collections.Generic;
