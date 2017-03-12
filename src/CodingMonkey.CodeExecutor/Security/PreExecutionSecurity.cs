@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.RegularExpressions;
 
     enum PreExecutionSecurityCodes
@@ -16,46 +17,32 @@
         public string SanitiseCode(string codeToSanitise, int santisationLoopLimit = 5)
         {
             string sanitisedCode = codeToSanitise;
-            int noOfReplacementsMade = -1;
+            string sanitisationFailedMessage = $"Compilation / Execution of code failed. Code: {(int)PreExecutionSecurityCodes.FailedSanitisation}";
+
+            int totalSanitisationReplacementsMade = -1;
             int tryCount = 0;
-            string SanitisationFailedMessage = $"Compilation / Execution of code failed. Code: {(int)PreExecutionSecurityCodes.FailedSanitisation}";
 
-            while (noOfReplacementsMade != 0)
+            while (totalSanitisationReplacementsMade != 0)
             {
-                if (tryCount > santisationLoopLimit)
+                if(tryCount >= santisationLoopLimit)
                 {
-                   throw new TimeoutException(SanitisationFailedMessage);
+                    throw new TimeoutException(sanitisationFailedMessage);
                 }
 
-                sanitisedCode = this.SanitiseTypes(sanitisedCode, out noOfReplacementsMade);
+                totalSanitisationReplacementsMade = -1;
+                int noOfTypeReplacementsMade = 0;
+                int noOfNamespaceReplacementsMade = 0;
+
+                sanitisedCode = this.SanitiseTypes(sanitisedCode, out noOfTypeReplacementsMade);
+                sanitisedCode = this.SanitiseNamespaces(sanitisedCode, out noOfNamespaceReplacementsMade);
+
+                totalSanitisationReplacementsMade = noOfTypeReplacementsMade + noOfNamespaceReplacementsMade;
+
                 tryCount++;
             }
 
-            noOfReplacementsMade = -1;
-            tryCount = 0;
-            while (noOfReplacementsMade != 0)
-            {
-                if (tryCount > santisationLoopLimit)
-                {
-                    throw new TimeoutException(SanitisationFailedMessage);
-                }
-
-                sanitisedCode = this.SanitiseUsings(sanitisedCode, out noOfReplacementsMade);
-                tryCount++;
-            }
-
-            noOfReplacementsMade = -1;
-            tryCount = 0;
-            while (noOfReplacementsMade != 0)
-            {
-                if (tryCount > santisationLoopLimit)
-                {
-                    throw new TimeoutException(SanitisationFailedMessage);
-                }
-
-                sanitisedCode = this.SanitiseNamespaces(sanitisedCode, out noOfReplacementsMade);
-                tryCount++;
-            }
+            int noOfSafeUsingStatementsAdded = 0;
+            sanitisedCode = this.AddMissingSafeUsings(sanitisedCode, out noOfSafeUsingStatementsAdded);
 
             return sanitisedCode;
         }
@@ -66,7 +53,7 @@
         /// </summary>
         /// <param name="codeToSanitise"></param>
         /// <returns></returns>
-        private string SanitiseUsings(string codeToSanitise, out int noOfAdditionsMade)
+        private string AddMissingSafeUsings(string codeToSanitise, out int noOfAdditionsMade)
         {
             string sanitisedCode = codeToSanitise;
             noOfAdditionsMade = 0;
@@ -98,21 +85,17 @@
                 string nsPatternIncludingExtraWhitespace = this.GetNamspaceRegexPatternIgnoreSpaces(bannedNamespace);
                 string nsPatternIncludingExtraWhitespaceAndTrailingDot = nsPatternIncludingExtraWhitespace + @"\s*[.]";
 
-                int namespaceMatches = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespace).Count;
-                int namespaceWithTrailingDotMatches =
-                    Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespaceAndTrailingDot).Count;
+                var nsMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespace);
+                var nsWithTrailingDotMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespaceAndTrailingDot);
+                int totalMatches = nsMatch.Count + nsWithTrailingDotMatch.Count;
 
-                if (namespaceWithTrailingDotMatches > 0)
+                if(totalMatches > 0)
                 {
-                    sanitisedCode = Regex.Replace(sanitisedCode, nsPatternIncludingExtraWhitespaceAndTrailingDot, "");
+                    var matches = this.CombineMatchCollections(nsMatch, nsWithTrailingDotMatch);
+                    sanitisedCode = this.RemoveMatchesInMatchCollectionFromCode(sanitisedCode, matches);
                 }
 
-                if (namespaceMatches > 0)
-                {
-                    sanitisedCode = Regex.Replace(sanitisedCode, nsPatternIncludingExtraWhitespace, "");
-                }
-
-                noOfReplacementsMade += namespaceWithTrailingDotMatches + namespaceMatches;
+                noOfReplacementsMade += totalMatches;
             }
 
             return sanitisedCode;
@@ -127,25 +110,19 @@
             {
                 // Remove the notiation that this type takes generics args
                 string bannedTypeToSearchFor = Regex.Replace(bannedType, @"`\d", "");
-
                 string bannedTypeToSearchForPatternWithDot = $"{bannedType}\\s*[.]";
-                int typeWithTrailingDotMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchForPatternWithDot).Count;
 
-                if (typeWithTrailingDotMatches > 0)
+                var typeWithTrailingDotMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchForPatternWithDot);
+                var typeMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchFor);
+                int totalMatches = typeWithTrailingDotMatches.Count + typeMatches.Count;
+
+                if (totalMatches > 0)
                 {
-                    // Remove Type with any static / property usages
-                    sanitisedCode = Regex.Replace(sanitisedCode, bannedTypeToSearchForPatternWithDot, "");
+                    var matches = this.CombineMatchCollections(typeMatches, typeWithTrailingDotMatches);
+                    sanitisedCode = this.RemoveMatchesInMatchCollectionFromCode(sanitisedCode, matches);
                 }
 
-                int typeMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchFor).Count;
-
-                if (typeMatches > 0)
-                {
-                    // Remove Type
-                    sanitisedCode = sanitisedCode.Replace(bannedTypeToSearchFor, "");
-                }
-
-                noOfReplacementsMade += typeMatches + typeWithTrailingDotMatches;
+                noOfReplacementsMade += totalMatches;
             }
 
             return sanitisedCode;
@@ -163,6 +140,26 @@
             }
 
             return regexPattern;
+        }
+
+        private string RemoveMatchesInMatchCollectionFromCode(string code, IEnumerable<Match> matches)
+        {
+            if (matches.Count() > 0)
+            {
+                foreach (var match in matches)
+                {
+                    code = code.Replace(match.Value, "");
+                }
+            }
+
+            return code;
+        }
+
+        private IEnumerable<Match> CombineMatchCollections(MatchCollection firstMatchCollection, MatchCollection secondMatchCollection)
+        {
+            return firstMatchCollection.OfType<Match>()
+                                       .Concat(secondMatchCollection.OfType<Match>())
+                                       .Where(m => m.Success);
         }
     }
 }

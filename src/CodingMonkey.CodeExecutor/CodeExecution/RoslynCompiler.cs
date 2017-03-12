@@ -23,8 +23,6 @@
 
         public IList<CompilerError> Compile(string code)
         {
-            List<CompilerError> errors = new List<CompilerError>();
-
             try
             {
                 code = this.Security.SanitiseCode(code);
@@ -39,18 +37,7 @@
             }
 
             var script = CSharpScript.Create(code);
-            IList<Diagnostic> errorsFromSource = script.Compile();
-            errors = errorsFromSource.Select(error => new CompilerError(error)).ToList();
-
-            // The user doesn't see using statements added by pre security checks
-            // so move the error line numbers to the right place.
-            foreach (var error in errors)
-            {
-                error.StartLineNumber = error.StartLineNumber - this.Security.LinesOfCodeAdded;
-                error.EndLineNumber = error.EndLineNumber - this.Security.LinesOfCodeAdded;
-            }
-
-            return errors;
+            return CheckScriptForErrors(script);
         }
 
         public async Task<ExecutionResult> ExecuteAsync(string code, string className, string mainMethodName, List<TestInput> inputs)
@@ -132,6 +119,30 @@
             }
 
             return returnValue;
+        }
+
+        private List<CompilerError> CheckScriptForErrors(Script code)
+        {
+            List<CompilerError> errors = new List<CompilerError>();
+            IList<Diagnostic> errorsFromSource = code.Compile();
+
+            // If no errors - do less work!
+            if(errorsFromSource.Count <= 0)
+            {
+                return errors;
+            }
+
+            errors = errorsFromSource.Select(error => new CompilerError(error)).ToList();
+
+            // The user doesn't see using statements added by pre security checks
+            // so move the error line numbers to the right place.
+            foreach (var error in errors)
+            {
+                error.StartLineNumber = error.StartLineNumber - this.Security.LinesOfCodeAdded;
+                error.EndLineNumber = error.EndLineNumber - this.Security.LinesOfCodeAdded;
+            }
+
+            return errors;
         }
 
         /// <summary>
