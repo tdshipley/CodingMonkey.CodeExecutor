@@ -38,7 +38,13 @@
             }
 
             executionCode = executionCode.TrimEnd() + $".{methodName}(";
+            this.AddMethodArgsToCallingStatement(methodArgs);
 
+            return this;
+        }
+
+        private void AddMethodArgsToCallingStatement(IEnumerable<TestInput> methodArgs)
+        {
             foreach (var args in methodArgs)
             {
                 if (args.ValueType == "String")
@@ -52,8 +58,6 @@
             }
 
             executionCode = executionCode.TrimEnd(',') + ");";
-
-            return this;
         }
     }
 }
