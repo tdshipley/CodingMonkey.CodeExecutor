@@ -40,7 +40,7 @@
             return CheckScriptForErrors(script);
         }
 
-        public async Task<ExecutionResult> ExecuteAsync(string code,
+        public async Task<ExecutionResult> SanitiseCodeAndExecuteAsync(string code,
             string className,
             string mainMethodName,
             List<TestInput> inputs,
@@ -52,7 +52,7 @@
             try
             {
                 code = this.Security.SanitiseCode(code);
-                var returnValue = await this.ExecuteCodeWithTimeoutAsync(timeoutMilliseconds, code, executionCode);
+                var returnValue = await this.ExecuteAsync(timeoutMilliseconds, code, executionCode);
                 return new ExecutionResult() { Successful = true, Value = returnValue, Error = null };
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@
             }
         }
 
-        private async Task<object> ExecuteCodeWithTimeoutAsync(int timeoutMilliseconds, string code, string executionCode)
+        private async Task<object> ExecuteAsync(int timeoutMilliseconds, string code, string executionCode)
         {
             object returnValue = null;
             Exception userSubmittedCodeRuntimeException = null;
