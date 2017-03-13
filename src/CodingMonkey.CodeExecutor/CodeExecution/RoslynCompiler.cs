@@ -40,32 +40,14 @@
             return CheckScriptForErrors(script);
         }
 
-        public async Task<ExecutionResult> ExecuteAsync(string code, string className, string mainMethodName, List<TestInput> inputs)
+        public async Task<ExecutionResult> ExecuteAsync(string code, string className, string mainMethodName, List<TestInput> inputs, int timeoutSeconds = 15)
         {
-            // Statements need a return in front of them to get the value see:
-            // https://github.com/dotnet/roslyn/issues/5279
-            string executionCode = $"return new {className}().{mainMethodName}(";
-
-            foreach(var input in inputs)
-            {
-                if(input.ValueType == "String")
-                {
-                    executionCode += $"{input.ArgumentName}: \"{input.Value.ToString()}\",";
-                }
-                else
-                {
-                    executionCode += $"{input.ArgumentName}: {input.Value.ToString()},";
-                }
-            }
-
-            executionCode = executionCode.TrimEnd(',') + ");";
-
+            string executionCode = this.CreateExecutionCode(className, mainMethodName, inputs);
 
             try
             {
                 code = this.Security.SanitiseCode(code);
-                const int Timeout = 1000 * 15;
-                var returnValue = await this.ExecuteCodeWithTimeoutAsync(Timeout, code, executionCode);
+                var returnValue = await this.ExecuteCodeWithTimeoutAsync(1000 * timeoutSeconds, code, executionCode);
                 return new ExecutionResult() { Successful = true, Value = returnValue, Error = null };
             }
             catch (Exception ex)
@@ -143,6 +125,29 @@
             }
 
             return errors;
+        }
+
+        private string CreateExecutionCode(string className, string mainMethodName, List<TestInput> inputs)
+        {
+            // Statements need a return in front of them to get the value see:
+            // https://github.com/dotnet/roslyn/issues/5279
+            string executionCode = $"return new {className}().{mainMethodName}(";
+
+            foreach (var input in inputs)
+            {
+                if (input.ValueType == "String")
+                {
+                    executionCode += $"{input.ArgumentName}: \"{input.Value.ToString()}\",";
+                }
+                else
+                {
+                    executionCode += $"{input.ArgumentName}: {input.Value.ToString()},";
+                }
+            }
+
+            executionCode = executionCode.TrimEnd(',') + ");";
+
+            return executionCode;
         }
 
         /// <summary>
