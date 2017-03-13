@@ -40,32 +40,19 @@
             return CheckScriptForErrors(script);
         }
 
-        public async Task<ExecutionResult> ExecuteAsync(string code, string className, string mainMethodName, List<TestInput> inputs)
+        public async Task<ExecutionResult> SanitiseCodeAndExecuteAsync(string code,
+            string className,
+            string mainMethodName,
+            List<TestInput> inputs,
+            int timeoutSeconds = 15)
         {
-            // Statements need a return in front of them to get the value see:
-            // https://github.com/dotnet/roslyn/issues/5279
-            string executionCode = $"return new {className}().{mainMethodName}(";
-
-            foreach(var input in inputs)
-            {
-                if(input.ValueType == "String")
-                {
-                    executionCode += $"{input.ArgumentName}: \"{input.Value.ToString()}\",";
-                }
-                else
-                {
-                    executionCode += $"{input.ArgumentName}: {input.Value.ToString()},";
-                }
-            }
-
-            executionCode = executionCode.TrimEnd(',') + ");";
-
+            string executionCode = this.CreateExecutionCode(className, mainMethodName, inputs);
+            int timeoutMilliseconds = 1000 * timeoutSeconds;
 
             try
             {
                 code = this.Security.SanitiseCode(code);
-                const int Timeout = 1000 * 15;
-                var returnValue = await this.ExecuteCodeWithTimeoutAsync(Timeout, code, executionCode);
+                var returnValue = await this.ExecuteAsync(timeoutMilliseconds, code, executionCode);
                 return new ExecutionResult() { Successful = true, Value = returnValue, Error = null };
             }
             catch (Exception ex)
@@ -75,7 +62,7 @@
             }
         }
 
-        private async Task<object> ExecuteCodeWithTimeoutAsync(int timeoutMilliseconds, string code, string executionCode)
+        private async Task<object> ExecuteAsync(int timeoutMilliseconds, string code, string executionCode)
         {
             object returnValue = null;
             Exception userSubmittedCodeRuntimeException = null;
@@ -143,6 +130,16 @@
             }
 
             return errors;
+        }
+
+        private string CreateExecutionCode(string className, string mainMethodName, List<TestInput> inputs)
+        {
+            // Statements need a return in front of them to get the value see:
+            // https://github.com/dotnet/roslyn/issues/5279
+            return new ExecutionCodeBuilder().AddReturnKeyword()
+                                             .CreateNewClassInstance(className)
+                                             .CallMethod(mainMethodName, inputs)
+                                             .Build();
         }
 
         /// <summary>

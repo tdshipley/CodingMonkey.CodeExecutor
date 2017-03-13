@@ -18,7 +18,7 @@
             }
             else
             {
-                ExecutionResult result = await compiler.ExecuteAsync(code, template.ClassName, template.MainMethodName, test.Inputs);
+                ExecutionResult result = await compiler.SanitiseCodeAndExecuteAsync(code, template.ClassName, template.MainMethodName, test.Inputs);
                 ProcessTestResult(result, test, resultSummary);
             }
         }
