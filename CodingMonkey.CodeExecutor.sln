@@ -1,17 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5AA0C67C-3706-4561-BAD8-EC6882B5A55F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1DDCDED4-265B-4092-902E-2002654E62E8}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CodingMonkey.CodeExecutor", "src\CodingMonkey.CodeExecutor\CodingMonkey.CodeExecutor.xproj", "{08C379FA-06AE-410F-9C92-2E2111E083FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodingMonkey.CodeExecutor", "src\CodingMonkey.CodeExecutor\CodingMonkey.CodeExecutor.csproj", "{08C379FA-06AE-410F-9C92-2E2111E083FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
