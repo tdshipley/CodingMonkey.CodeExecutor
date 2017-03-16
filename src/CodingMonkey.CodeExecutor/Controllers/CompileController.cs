@@ -7,6 +7,8 @@
     
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Serilog;
+    using System.Collections.Generic;
 
     [Route("api/[controller]")]
     [Authorize]
@@ -18,9 +20,20 @@
         {
             submittedCode.ResultSummary = new ResultSummary();
 
-            var compilerErrors = new RoslynCompiler().Compile(submittedCode.Code);
+            IList<CompilerError> compilerErrors = null;
 
-            if (compilerErrors.Count == 0)
+            try
+            {
+                compilerErrors = new RoslynCompiler().Compile(submittedCode.Code);
+            }
+            catch (System.Exception ex)
+            {
+                Log.Logger.Fatal(ex, "Compile Controller: Failed to compile code");
+                throw;
+            }
+            
+
+            if (compilerErrors != null && compilerErrors.Count == 0)
             {
                 submittedCode.ResultSummary.HasCompilerErrors = false;
                 submittedCode.ResultSummary.CompilerErrors = null;

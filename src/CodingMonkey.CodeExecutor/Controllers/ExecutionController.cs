@@ -13,6 +13,7 @@
     
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Serilog;
 
     [Route("api/[controller]")]
     [Authorize]
@@ -26,12 +27,20 @@
 
             foreach (var test in submittedCode.Tests)
             {
-                await
+                try
+                {
+                    await
                     TestExecutor.RunTest(
                         submittedCode.Code,
                         submittedCode.CodeTemplate,
                         test,
                         submittedCode.ResultSummary);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Fatal(ex, "Execution Controller: Failed to execute test");
+                    throw;
+                }
 
                 if (submittedCode.ResultSummary.ErrorProcessingTests || submittedCode.ResultSummary.HasRuntimeError)
                 {
