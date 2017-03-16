@@ -11,6 +11,7 @@
     using CodingMonkey.CodeExecutor.Models;
     using CodingMonkey.CodeExecutor.Security;
     using CodingMonkey.CodeExecutor.Structs;
+    using Serilog;
 
     public class RoslynCompiler
     {
@@ -111,7 +112,19 @@
         private List<CompilerError> CheckScriptForErrors(Script code)
         {
             List<CompilerError> errors = new List<CompilerError>();
-            IList<Diagnostic> errorsFromSource = code.Compile();
+            IList<Diagnostic> errorsFromSource = new List<Diagnostic>();
+
+            try
+            {
+                errorsFromSource = code.Compile();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Fatal(ex, "Roysln Compiler: Failed to compile code");
+                errors.Add(new CompilerError(new Exception("Coding Monkey failed to compile code.")));
+
+                return errors;
+            }
 
             // If no errors - do less work!
             if(errorsFromSource.Count <= 0)
