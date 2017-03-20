@@ -16,7 +16,7 @@
     {
 
         [HttpPost]
-        public async Task<JsonResult> Post([FromBody] SubmittedCode submittedCode)
+        public JsonResult Post([FromBody] SubmittedCode submittedCode)
         {
             submittedCode.ResultSummary = new ResultSummary();
 
@@ -31,7 +31,7 @@
                 Log.Logger.Fatal(ex, "Compile Controller: Failed to compile code");
                 throw;
             }
-            
+
 
             if (compilerErrors != null && compilerErrors.Count == 0)
             {
