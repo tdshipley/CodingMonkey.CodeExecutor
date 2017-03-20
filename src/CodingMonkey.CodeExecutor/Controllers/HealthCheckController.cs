@@ -6,6 +6,9 @@
     using Serilog;
     using CodingMonkey.CodeExecutor.Structs;
     using System;
+    using Microsoft.Extensions.Options;
+    using CodingMonkey.CodeExecutor.Configuration;
+    using System.Net.Http;
 
     [Route("api/[controller]")]
     public class HealthCheckController : Controller
@@ -22,6 +25,13 @@
 
         const string expectedReturnValue = "1";
 
+        private IOptions<IdentityServerConfig> _identityServerConfig { get; set; }
+
+        public HealthCheckController(IOptions<IdentityServerConfig> identityServerConfig)
+        {
+            this._identityServerConfig = identityServerConfig;
+        }
+
         // GET: /<controller>/
         public async Task<JsonResult> IndexAsync()
         {
@@ -29,10 +39,11 @@
 
             try
             {
+                await this.IdentityServerHealthcheckAsync();
                 this.CompileHealthcheck();
                 await this.ExecuteHealthcheckAsync();
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Log.Logger.Fatal(e, "CodeExecutor service failed healthcheck");
                 isServiceOK = false;
@@ -42,6 +53,19 @@
             {
                 OK = isServiceOK
             });
+        }
+
+        private async Task IdentityServerHealthcheckAsync()
+        {
+            var baseAddress = this._identityServerConfig.Value.Authority;
+            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+
+            var response = await httpClient.GetAsync("");
+
+            if(response.StatusCode != System.Net.HttpStatusCode.NotFound)
+            {
+                throw new Exception("Could not connect to identity server");
+            }
         }
 
         private void CompileHealthcheck()

@@ -13,6 +13,7 @@ namespace CodingMonkey.CodeExecutor
     using Serilog;
     using Serilog.Sinks.RollingFile;
     using Newtonsoft.Json.Serialization;
+    using CodingMonkey.CodeExecutor.Configuration;
 
     public class Startup
     {
@@ -58,6 +59,14 @@ namespace CodingMonkey.CodeExecutor
                             res.NamingStrategy = null; // This removes camel casing
                         }
                     });
+
+            services.Configure<IdentityServerConfig>(
+                config =>
+                {
+                    config.Authority = Configuration["IdentityServer:Authority"];
+                    config.ScopeName = Configuration["IdentityServer:ScopeName"];
+                    config.ScopeSecret = Configuration["IdentityServer:ScopeSecret"];
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
