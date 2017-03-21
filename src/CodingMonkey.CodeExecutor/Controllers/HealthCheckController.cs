@@ -57,32 +57,57 @@
 
         private async Task IdentityServerHealthcheckAsync()
         {
-            var baseAddress = this._identityServerConfig.Value.Authority;
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
-
-            var response = await httpClient.GetAsync("");
-
-            if(response.StatusCode != System.Net.HttpStatusCode.NotFound)
+            try
             {
-                throw new Exception("Could not connect to identity server");
+                var baseAddress = this._identityServerConfig.Value.Authority;
+                var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+
+                var response = await httpClient.GetAsync("");
+
+                if (response.StatusCode != System.Net.HttpStatusCode.NotFound)
+                {
+                    throw new Exception("Could not connect to identity server");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Fatal("Healthcheck: failed to compile code in code executor.");
+                throw e;
             }
         }
 
         private void CompileHealthcheck()
         {
-            new RoslynCompiler().Compile(code);
+            try
+            {
+                new RoslynCompiler().Compile(code);
+            }
+            catch (Exception e)
+            {
+                Log.Fatal("Healthcheck: failed to compile code in code executor.");
+                throw e;
+            }
+            
         }
 
         private async Task ExecuteHealthcheckAsync()
         {
-            ExecutionResult result = await new RoslynCompiler().SanitiseCodeAndExecuteAsync(code,
+            try
+            {
+                ExecutionResult result = await new RoslynCompiler().SanitiseCodeAndExecuteAsync(code,
                 "Test",
                 "TestMethod",
                 new System.Collections.Generic.List<Models.TestInput>());
 
-            if(result.Value.ToString() != expectedReturnValue)
+                if (result.Value.ToString() != expectedReturnValue)
+                {
+                    throw new Exception("Execute healthcheck failed to return correct value");
+                }
+            }
+            catch (Exception e)
             {
-                throw new Exception("Execute healthcheck failed to return correct value");
+                Log.Fatal("Healthcheck: failed to execute code in code executor.");
+                throw e;
             }
         }
     }
