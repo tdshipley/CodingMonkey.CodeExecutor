@@ -51,6 +51,8 @@ namespace CodingMonkey.CodeExecutor
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddApplicationInsightsTelemetry(Configuration);
+
             // Change JSON serialisation to use property names!
             // See: https://weblog.west-wind.com/posts/2016/Jun/27/Upgrading-to-ASPNET-Core-RTM-from-RC2
             services.AddMvc()
