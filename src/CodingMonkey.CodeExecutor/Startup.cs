@@ -11,7 +11,6 @@ namespace CodingMonkey.CodeExecutor
     using Microsoft.Extensions.Logging;
 
     using Serilog;
-    using Serilog.Sinks.RollingFile;
     using Newtonsoft.Json.Serialization;
     using CodingMonkey.CodeExecutor.Configuration;
 
@@ -36,6 +35,12 @@ namespace CodingMonkey.CodeExecutor
                 Log.Logger = new LoggerConfiguration()
                                     .MinimumLevel.Debug()
                                     .WriteTo.RollingFile(Path.Combine(applicationPath, "log_{Date}.txt"))
+                                    .CreateLogger();
+            }
+            else
+            {
+                Log.Logger = new LoggerConfiguration()
+                                    .WriteTo.ApplicationInsightsEvents(Configuration["ApplicationInsights:InstrumentationKey"])
                                     .CreateLogger();
             }
         }
