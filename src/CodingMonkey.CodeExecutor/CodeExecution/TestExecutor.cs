@@ -7,6 +7,7 @@ namespace CodingMonkey.CodeExecutor.CodeExecution
     using Structs;
     using System;
     using System.Threading.Tasks;
+    using System.Linq;
 
     public static class TestExecutor
     {
@@ -47,7 +48,15 @@ namespace CodingMonkey.CodeExecutor.CodeExecution
             testRun.Result = new TestResult { TestExecuted = true };
 
             testRun.ExpectedOutput.Value = testRun.ExpectedOutput.Value.ToString();
-            testRun.Result.TestPassed = testRun.ExpectedOutput.Value.ToString().Equals(testRun.ActualOutput.ToString());
+
+            if(testRun.ExpectedOutput.ValueType == "Boolean")
+            {
+                testRun.Result.TestPassed = testRun.ExpectedOutput.Value.ToString().ToLower().Equals(testRun.ActualOutput.ToString().ToLower());
+            }
+            else
+            {
+                testRun.Result.TestPassed = testRun.ExpectedOutput.Value.ToString().Equals(testRun.ActualOutput.ToString());
+            }
         }
     }
 }
