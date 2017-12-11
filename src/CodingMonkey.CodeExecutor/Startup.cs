@@ -13,6 +13,7 @@ namespace CodingMonkey.CodeExecutor
     using Serilog;
     using Newtonsoft.Json.Serialization;
     using CodingMonkey.CodeExecutor.Configuration;
+    using IdentityServer4.AccessTokenValidation;
 
     public class Startup
     {
@@ -66,6 +67,18 @@ namespace CodingMonkey.CodeExecutor
                     config.ScopeName = Configuration["IdentityServer:ScopeName"];
                     config.ScopeSecret = Configuration["IdentityServer:ScopeSecret"];
                 });
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.Authority = this.Configuration["IdentityServer:Authority"];
+                        options.ApiName = this.Configuration["IdentityServer:ScopeName"];
+                        options.ApiSecret = this.Configuration["IdentityServer:ScopeSecret"];
+                        //options.AutomaticChallenge = true;
+                        // Todo: Do not require HTTP while in development. Change to true on release
+                        options.RequireHttpsMetadata = false;
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,20 +89,6 @@ namespace CodingMonkey.CodeExecutor
             loggerFactory.AddSerilog();
 
             app.UseStaticFiles();
-
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            app.UseIdentityServerAuthentication(options =>
-            {
-                options.Authority = this.Configuration["IdentityServer:Authority"];
-                options.ScopeName = this.Configuration["IdentityServer:ScopeName"];
-                options.ScopeSecret = this.Configuration["IdentityServer:ScopeSecret"];
-
-                options.AutomaticAuthenticate = true;
-                //options.AutomaticChallenge = true;
-                // Todo: Do not require HTTP while in development. Change to true on release
-                options.RequireHttpsMetadata = false;
-            });
-
             app.UseMvc();
         }
     }

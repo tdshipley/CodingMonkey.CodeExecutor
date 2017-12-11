@@ -10,6 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="log_20161121.txt" />
+    <None Remove="log_20161129.txt" />
+    <None Remove="log_20161130.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="node_modules" />
     <None Update="wwwroot\**\*;node_modules;**.user;**.vspscc">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
