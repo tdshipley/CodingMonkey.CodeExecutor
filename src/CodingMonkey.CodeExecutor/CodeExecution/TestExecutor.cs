@@ -1,7 +1,6 @@
-﻿using Serilog;
-
-namespace CodingMonkey.CodeExecutor.CodeExecution
+﻿namespace CodingMonkey.CodeExecutor.CodeExecution
 {
+    using Serilog;
     using CodingMonkey.Models;
     using CodingMonkey.CodeExecutor.Models;
     using Structs;

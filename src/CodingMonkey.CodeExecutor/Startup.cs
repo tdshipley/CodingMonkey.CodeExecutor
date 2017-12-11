@@ -16,18 +16,12 @@ namespace CodingMonkey.CodeExecutor
 
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public IConfiguration Configuration { get; set; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             string applicationPath = env.ContentRootPath;
-
-            // Set up configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(applicationPath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.secrets.json")
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            Configuration = configuration;
 
             if(env.IsDevelopment() || env.IsStaging())
             {
@@ -44,8 +38,6 @@ namespace CodingMonkey.CodeExecutor
                                     .CreateLogger();
             }
         }
-
-        public IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
