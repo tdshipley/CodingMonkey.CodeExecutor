@@ -64,7 +64,7 @@
 
                 var response = await httpClient.GetAsync("");
 
-                if (response.StatusCode != System.Net.HttpStatusCode.NotFound)
+                if (!response.IsSuccessStatusCode)
                 {
                     throw new Exception("Could not connect to identity server");
                 }
