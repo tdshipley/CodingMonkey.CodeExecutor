@@ -46,20 +46,6 @@ namespace CodingMonkey.CodeExecutor
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            // Change JSON serialisation to use property names!
-            // See: https://weblog.west-wind.com/posts/2016/Jun/27/Upgrading-to-ASPNET-Core-RTM-from-RC2
-            services.AddMvc()
-                    .AddJsonOptions(opt =>
-                    {
-                        var resolver = opt.SerializerSettings.ContractResolver;
-
-                        if (resolver != null)
-                        {
-                            var res = resolver as DefaultContractResolver;
-                            res.NamingStrategy = null; // This removes camel casing
-                        }
-                    });
-
             services.Configure<IdentityServerConfig>(
                 config =>
                 {
@@ -79,6 +65,20 @@ namespace CodingMonkey.CodeExecutor
                         // Todo: Do not require HTTP while in development. Change to true on release
                         options.RequireHttpsMetadata = false;
                     });
+
+            // Change JSON serialisation to use property names!
+            // See: https://weblog.west-wind.com/posts/2016/Jun/27/Upgrading-to-ASPNET-Core-RTM-from-RC2
+            services.AddMvc()
+                    .AddJsonOptions(opt =>
+                    {
+                        var resolver = opt.SerializerSettings.ContractResolver;
+
+                        if (resolver != null)
+                        {
+                            var res = resolver as DefaultContractResolver;
+                            res.NamingStrategy = null; // This removes camel casing
+                        }
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +89,7 @@ namespace CodingMonkey.CodeExecutor
             loggerFactory.AddSerilog();
 
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
