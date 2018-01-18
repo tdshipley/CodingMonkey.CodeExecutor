@@ -87,8 +87,8 @@
                 string nsPatternIncludingExtraWhitespace = this.GetNamspaceRegexPatternIgnoreSpaces(bannedNamespace);
                 string nsPatternIncludingExtraWhitespaceAndTrailingDot = nsPatternIncludingExtraWhitespace + @"\s*[.]";
 
-                var nsMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespace);
-                var nsWithTrailingDotMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespaceAndTrailingDot);
+                var nsMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespace, RegexOptions.IgnoreCase);
+                var nsWithTrailingDotMatch = Regex.Matches(sanitisedCode, nsPatternIncludingExtraWhitespaceAndTrailingDot, RegexOptions.IgnoreCase);
                 int totalMatches = nsMatch.Count + nsWithTrailingDotMatch.Count;
 
                 if (totalMatches > 0)
@@ -114,11 +114,11 @@
             Parallel.ForEach(SecurityLists.BannedTypes, (bannedType) =>
             {
                 // Remove the notiation that this type takes generics args
-                string bannedTypeToSearchFor = Regex.Replace(bannedType, @"`\d", "");
+                string bannedTypeToSearchFor = Regex.Replace(bannedType, @"`\d", "", RegexOptions.IgnoreCase);
                 string bannedTypeToSearchForPatternWithDot = $"{bannedType}\\s*[.]";
 
-                var typeWithTrailingDotMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchForPatternWithDot);
-                var typeMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchFor);
+                var typeWithTrailingDotMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchForPatternWithDot, RegexOptions.IgnoreCase);
+                var typeMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchFor, RegexOptions.IgnoreCase);
                 int totalMatches = typeWithTrailingDotMatches.Count + typeMatches.Count;
 
                 if (totalMatches > 0)
