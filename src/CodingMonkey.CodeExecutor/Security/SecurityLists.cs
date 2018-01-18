@@ -85,7 +85,6 @@
                     "SynchronizedReadOnlyCollection`1",
                     "TimeSpanFormat",
                     "TimeSpanParse",
-                    "Type",
                     "UInt16",
                     "UInt32",
                     "UInt64",
