@@ -13,21 +13,16 @@ namespace CodingMonkey.CodeExecutor
     using Serilog;
     using Newtonsoft.Json.Serialization;
     using CodingMonkey.CodeExecutor.Configuration;
+    using IdentityServer4.AccessTokenValidation;
 
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public IConfiguration Configuration { get; set; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             string applicationPath = env.ContentRootPath;
-
-            // Set up configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(applicationPath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.secrets.json")
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
+            Configuration = configuration;
 
             if(env.IsDevelopment() || env.IsStaging())
             {
@@ -45,13 +40,31 @@ namespace CodingMonkey.CodeExecutor
             }
         }
 
-        public IConfigurationRoot Configuration { get; set; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
+
+            services.Configure<IdentityServerConfig>(
+                config =>
+                {
+                    config.Authority = Configuration["IdentityServer:Authority"];
+                    config.ScopeName = Configuration["IdentityServer:ScopeName"];
+                    config.ScopeSecret = Configuration["IdentityServer:ScopeSecret"];
+                });
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.Authority = this.Configuration["IdentityServer:Authority"];
+                        options.ApiName = this.Configuration["IdentityServer:ScopeName"];
+                        options.ApiSecret = this.Configuration["IdentityServer:ScopeSecret"];
+                        //options.AutomaticChallenge = true;
+                        // Todo: Do not require HTTP while in development. Change to true on release
+                        options.RequireHttpsMetadata = false;
+                    });
 
             // Change JSON serialisation to use property names!
             // See: https://weblog.west-wind.com/posts/2016/Jun/27/Upgrading-to-ASPNET-Core-RTM-from-RC2
@@ -66,14 +79,6 @@ namespace CodingMonkey.CodeExecutor
                             res.NamingStrategy = null; // This removes camel casing
                         }
                     });
-
-            services.Configure<IdentityServerConfig>(
-                config =>
-                {
-                    config.Authority = Configuration["IdentityServer:Authority"];
-                    config.ScopeName = Configuration["IdentityServer:ScopeName"];
-                    config.ScopeSecret = Configuration["IdentityServer:ScopeSecret"];
-                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,20 +89,7 @@ namespace CodingMonkey.CodeExecutor
             loggerFactory.AddSerilog();
 
             app.UseStaticFiles();
-
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            app.UseIdentityServerAuthentication(options =>
-            {
-                options.Authority = this.Configuration["IdentityServer:Authority"];
-                options.ScopeName = this.Configuration["IdentityServer:ScopeName"];
-                options.ScopeSecret = this.Configuration["IdentityServer:ScopeSecret"];
-
-                options.AutomaticAuthenticate = true;
-                //options.AutomaticChallenge = true;
-                // Todo: Do not require HTTP while in development. Change to true on release
-                options.RequireHttpsMetadata = false;
-            });
-
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
