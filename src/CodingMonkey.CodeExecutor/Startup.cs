@@ -34,18 +34,13 @@ namespace CodingMonkey.CodeExecutor
             }
             else
             {
-                Log.Logger = new LoggerConfiguration()
-                                    .WriteTo.ApplicationInsightsEvents(Configuration["ApplicationInsights:InstrumentationKey"])
-                                    .CreateLogger();
+                //TODO: Sort out production logging
             }
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddApplicationInsightsTelemetry(Configuration);
-
             services.Configure<IdentityServerConfig>(
                 config =>
                 {
