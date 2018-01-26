@@ -63,6 +63,7 @@ namespace CodingMonkey.CodeExecutor
 
             // Change JSON serialisation to use property names!
             // See: https://weblog.west-wind.com/posts/2016/Jun/27/Upgrading-to-ASPNET-Core-RTM-from-RC2
+
             services.AddMvc()
                     .AddJsonOptions(opt =>
                     {

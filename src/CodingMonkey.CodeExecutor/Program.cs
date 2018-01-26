@@ -17,6 +17,7 @@
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
+                    config.AddJsonFile("appsettings.json");
                     config.AddEnvironmentVariables();
                 })
                 .Build();

@@ -16,7 +16,7 @@
         const string code = @"
                             public class Test
                             {
-                                public int TestMethod()
+                                public int TestCode()
                                 {
                                     return 1;
                                 }
@@ -46,7 +46,7 @@
             catch (Exception e)
             {
                 Log.Logger.Fatal(e, "CodeExecutor service failed healthcheck");
-                isServiceOK = false;
+                throw e;
             }
 
             return Json(new
@@ -96,7 +96,7 @@
             {
                 ExecutionResult result = await new RoslynCompiler().SanitiseCodeAndExecuteAsync(code,
                 "Test",
-                "TestMethod",
+                "TestCode",
                 new System.Collections.Generic.List<Models.TestInput>());
 
                 if (result.Value.ToString() != expectedReturnValue)
