@@ -16,7 +16,7 @@
 				"ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://localhost:60149/",
         "IdentityServer:Authority": "http://localhost:55497",
-        "IdentityServer:ScopeName": "CodingMonkey.CodeExecutor",
+        "IdentityServer:ScopeName": "codingmonkey_code_executor",
         "IdentityServer:ScopeSecret": "E40F9FC9-C174-4BB9-8E8D-2B3AF5B1183D"
 			}
 		}

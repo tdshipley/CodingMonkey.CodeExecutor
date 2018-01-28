@@ -1,0 +1,4 @@
+ # Sample contents of .dockerignore file
+ artifacts/
+ src/CodingMonkey.CodeExecutor/bin
+ src/CodingMonkey.CodeExecutor/obj

@@ -23,7 +23,7 @@
             {
                 Log.Logger.Error(e, "Failed to run test");
                 resultSummary.ErrorProcessingTests = true;
-                throw;
+                throw e;
             }
         }
 
