@@ -39,9 +39,9 @@
 
             try
             {
-                await this.IdentityServerHealthcheckAsync();
                 this.CompileHealthcheck();
                 await this.ExecuteHealthcheckAsync();
+                await this.IdentityServerHealthcheckAsync();
             }
             catch (Exception e)
             {
@@ -62,7 +62,7 @@
                 var baseAddress = this._identityServerConfig.Value.Authority;
                 var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
 
-                var response = await httpClient.GetAsync("");
+                var response = await httpClient.GetAsync("/.well-known/openid-configuration");
 
                 if (!response.IsSuccessStatusCode)
                 {
