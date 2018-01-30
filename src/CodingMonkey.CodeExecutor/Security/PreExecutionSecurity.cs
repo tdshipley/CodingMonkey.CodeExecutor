@@ -118,13 +118,12 @@
                 string bannedTypeToSearchForPatternWithDot = $"{bannedType}\\s*[.]";
 
                 var typeWithTrailingDotMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchForPatternWithDot, RegexOptions.IgnoreCase);
-                var typeMatches = Regex.Matches(sanitisedCode, bannedTypeToSearchFor, RegexOptions.IgnoreCase);
-                int totalMatches = typeWithTrailingDotMatches.Count + typeMatches.Count;
+                int totalMatches = typeWithTrailingDotMatches.Count;
 
                 if (totalMatches > 0)
                 {
-                    var matches = this.CombineMatchCollections(typeMatches, typeWithTrailingDotMatches);
-                    sanitisedCode = this.RemoveMatchesInMatchCollectionFromCode(sanitisedCode, matches);
+                    var successfulMatches = this.GetSuccessfulMatches(typeWithTrailingDotMatches);
+                    sanitisedCode = this.RemoveMatchesInMatchCollectionFromCode(sanitisedCode, successfulMatches);
                 }
 
                 _noOfReplacementsMade += totalMatches;
@@ -167,6 +166,12 @@
             return firstMatchCollection.OfType<Match>()
                                        .Concat(secondMatchCollection.OfType<Match>())
                                        .Where(m => m.Success);
+        }
+
+        private IEnumerable<Match> GetSuccessfulMatches(MatchCollection matches)
+        {
+            return matches.OfType<Match>()
+                          .Where(m => m.Success);
         }
     }
 }
