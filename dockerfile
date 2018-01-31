@@ -8,6 +8,7 @@ FROM microsoft/aspnetcore-build:2.0.3 AS builder
 
     # copies the rest of your code
     COPY ./src/CodingMonkey.CodeExecutor/ .
+    RUN dotnet test
     RUN dotnet publish --output /app/ --configuration Release
 
 # Stage 2
