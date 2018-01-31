@@ -1,8 +1,8 @@
 version: 2
 jobs:
   test:
-  override:
-    - dotnet test
+    override:
+      - dotnet test
   build:
     working_directory: ~/circle2test
     machine: true
