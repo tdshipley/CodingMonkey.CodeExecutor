@@ -9,6 +9,7 @@ FROM microsoft/aspnetcore-build:2.0.3 AS builder
     # copies the rest of your code
     COPY ./src/ .
     RUN echo "Running unit tests"
+    RUN ls
     RUN dotnet test ./src/CodingMonkey.CodeExecutor.UnitTests/CodingMonkey.CodeExecutor.UnitTests.csproj
     RUN dotnet publish --output /app/ --configuration Release
 
