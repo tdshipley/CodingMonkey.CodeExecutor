@@ -119,8 +119,7 @@ namespace CodingMonkey.CodeExecutor.UnitTests.SecurityTests
                                                 {
                                                     public void MyMethod()
                                                     {
-                                                        // Type written to cause 6 regex replacements
-                                                        TypeCode code = TyTyTyTyTyTypepepepepepe.GetTypeCode(bool);
+                                                        TypeCode code = TyTyTyTyTyTyTyTypepepepepepepepe.GetTypeCode(bool);
                                                         // DoNothing
                                                     }
                                                 }
