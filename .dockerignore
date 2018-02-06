@@ -2,3 +2,6 @@
  artifacts/
  src/CodingMonkey.CodeExecutor/bin
  src/CodingMonkey.CodeExecutor/obj
+ tests/CodingMonkey.CodeExecutor.UnitTests/bin
+ tests/CodingMonkey.CodeExecutor.UnitTests/obj
+ 
