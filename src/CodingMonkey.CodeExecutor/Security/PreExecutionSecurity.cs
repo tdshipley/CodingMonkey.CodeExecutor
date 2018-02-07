@@ -21,16 +21,14 @@
             string sanitisationFailedMessage = $"Compilation / Execution of code failed. Code: {(int)PreExecutionSecurityCodes.FailedSanitisation}";
 
             int totalSanitisationReplacementsMade = -1;
-            int tryCount = 0;
 
-            while (totalSanitisationReplacementsMade != 0)
+            for(int count = 0; count < santisationLoopLimit; count++)
             {
-                if(tryCount >= santisationLoopLimit)
+                if(totalSanitisationReplacementsMade == 0)
                 {
-                    throw new TimeoutException(sanitisationFailedMessage);
+                    break;
                 }
 
-                totalSanitisationReplacementsMade = -1;
                 int noOfTypeReplacementsMade = 0;
                 int noOfNamespaceReplacementsMade = 0;
 
@@ -38,8 +36,11 @@
                 sanitisedCode = this.SanitiseNamespaces(sanitisedCode, out noOfNamespaceReplacementsMade);
 
                 totalSanitisationReplacementsMade = noOfTypeReplacementsMade + noOfNamespaceReplacementsMade;
+            }
 
-                tryCount++;
+            if(totalSanitisationReplacementsMade > 0)
+            {
+                throw new TimeoutException(sanitisationFailedMessage);
             }
 
             int noOfSafeUsingStatementsAdded = 0;
@@ -82,7 +83,7 @@
             noOfReplacementsMade = 0;
             int _noOfReplacementsMade = 0;
 
-            Parallel.ForEach(SecurityLists.BannedNamespaces, (bannedNamespace) =>
+            foreach(var bannedNamespace in SecurityLists.BannedNamespaces)
             {
                 string nsPatternIncludingExtraWhitespace = this.GetNamspaceRegexPatternIgnoreSpaces(bannedNamespace);
                 string nsPatternIncludingExtraWhitespaceAndTrailingDot = nsPatternIncludingExtraWhitespace + @"\s*[.]";
@@ -98,7 +99,7 @@
                 }
 
                 _noOfReplacementsMade += totalMatches;
-            });
+            }
 
             noOfReplacementsMade = _noOfReplacementsMade;
 
@@ -111,7 +112,7 @@
             noOfReplacementsMade = 0;
             int _noOfReplacementsMade = 0;
 
-            Parallel.ForEach(SecurityLists.BannedTypes, (bannedType) =>
+            foreach(var bannedType in SecurityLists.BannedTypes)
             {
                 // Remove the notiation that this type takes generics args
                 string bannedTypeToSearchFor = Regex.Replace(bannedType, @"`\d", "", RegexOptions.IgnoreCase);
@@ -128,7 +129,7 @@
                 }
 
                 _noOfReplacementsMade += totalMatches;
-            });
+            }
 
             noOfReplacementsMade += _noOfReplacementsMade;
 
