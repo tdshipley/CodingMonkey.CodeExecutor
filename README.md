@@ -1,4 +1,7 @@
 # CodingMonkey.CodeExecutor
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/62e7bcd4984e415aa3314f9252d27b82)](https://app.codacy.com/app/thomas.shipley/CodingMonkey.CodeExecutor?utm_source=github.com&utm_medium=referral&utm_content=tdshipley/CodingMonkey.CodeExecutor&utm_campaign=badger)
+
 API for executing code submitted by a user
 
 ## Required Secrets File
